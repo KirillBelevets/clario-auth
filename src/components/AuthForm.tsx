@@ -6,12 +6,12 @@ import * as z from "zod";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import {
-  isValidEmail,
-  isValidPassword,
+  getInputStyles,
   checkMinLength,
   checkUppercase,
   checkDigit,
-  getInputStyles,
+  isValidPassword,
+  isValidEmail,
   getRequirementStyle,
 } from "../utils/formValidation";
 
@@ -70,7 +70,7 @@ export default function AuthForm() {
   const passwordValue = watch("password") || "";
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#F4F9FF] to-[#E0EDFB] px-8">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#F4F9FF] to-[#E0EDFB] px-4">
       <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md">
         <h2 className="text-2xl font-bold mb-8 text-black flex justify-center">
           Sign Up
