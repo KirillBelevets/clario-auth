@@ -18,7 +18,7 @@ export const getInputStyles = (isValid: boolean, hasError: boolean) =>
   }`;
 
 export const getRequirementStyle = (condition: boolean, fieldValue: string) => {
-  const isEmpty = !fieldValue || fieldValue.trim() === "";
+  const isEmpty = fieldValue === "";
 
   return isEmpty
     ? "text-gray-500"

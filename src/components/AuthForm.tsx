@@ -70,7 +70,7 @@ export default function AuthForm() {
   const passwordValue = watch("password") || "";
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#F4F9FF] to-[#E0EDFB] px-4">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#F4F9FF] to-[#E0EDFB] px-8">
       <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md">
         <h2 className="text-2xl font-bold mb-8 text-black flex justify-center">
           Sign Up
@@ -135,13 +135,15 @@ export default function AuthForm() {
           </p>
         </div>
 
-        <button
-          type="submit"
-          id="submit-btn"
-          className="w-full p-3 bg-gradient-to-r from-[#4A90E2] to-[#5CA9F2] text-white font-semibold rounded-full shadow-md hover:opacity-90 transition"
-        >
-          Sign up
-        </button>
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            id="submit-btn"
+            className="mx-auto w-full max-w-[240px] p-3 bg-gradient-to-r from-[#4A90E2] to-[#5CA9F2] text-white font-semibold rounded-full shadow-md hover:opacity-90 transition"
+          >
+            Sign up
+          </button>
+        </div>
 
         <p className="text-green-500 mt-8 flex justify-center min-h-6">
           {isSubmitted ? "Form submitted successfully!" : ""}
