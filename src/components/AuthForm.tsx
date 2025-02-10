@@ -1,18 +1,16 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import {
-  getInputStyles,
   checkMinLength,
   checkUppercase,
   checkDigit,
   isValidPassword,
   isValidEmail,
-  getRequirementStyle,
 } from "../utils/formValidation";
 
 const schema = z.object({
@@ -40,6 +38,27 @@ export default function AuthForm() {
     resolver: zodResolver(schema),
     mode: "onChange",
   });
+
+  const getRequirementStyle = useCallback(
+    (condition: boolean, fieldValue: string) => {
+      return fieldValue === ""
+        ? "text-gray-500"
+        : condition
+        ? "text-green-500"
+        : "text-red-500";
+    },
+    []
+  );
+
+  const getInputStyles = useCallback((isValid: boolean, hasError: boolean) => {
+    return `w-full text-black p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${
+      hasError
+        ? "bg-red-100 focus:ring-red-500 border-red-500 text-red-500"
+        : isValid
+        ? "focus:ring-green-400 border-green-500"
+        : "focus:ring-blue-400"
+    }`;
+  }, []);
 
   const onSubmit = () => {
     const emailInput = document.getElementById("email") as HTMLInputElement;
