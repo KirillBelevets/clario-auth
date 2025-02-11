@@ -7,3 +7,5 @@ export const checkDigit = (password: string) => /[0-9]/.test(password);
 
 export const isValidPassword = (password: string) =>
   checkMinLength(password) && checkUppercase(password) && checkDigit(password);
+
+

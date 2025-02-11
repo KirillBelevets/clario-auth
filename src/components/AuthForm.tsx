@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import debounce from "lodash/debounce";
+import { createDebouncedSetter } from "../utils/helpers";
 
 import {
   checkMinLength,
@@ -42,36 +42,24 @@ export default function AuthForm() {
   const passwordValue = watch("password") || "";
 
   const debouncedSetEmail = useMemo(
-    () =>
-      debounce((value: string) => {
-        setDebouncedEmail(value);
-      }, 1000),
+    () => createDebouncedSetter<string>(setDebouncedEmail, 1000),
     []
   );
 
   const debouncedSetPassword = useMemo(
-    () =>
-      debounce((value: string) => {
-        setDebouncedPassword(value);
-      }, 1000),
+    () => createDebouncedSetter<string>(setDebouncedPassword, 1000),
     []
   );
 
   useEffect(() => {
     debouncedSetEmail(emailValue);
-
-    return () => {
-      debouncedSetEmail.cancel();
-    };
-  }, [emailValue, debouncedSetEmail]);
-
-  useEffect(() => {
     debouncedSetPassword(passwordValue);
 
     return () => {
+      debouncedSetEmail.cancel();
       debouncedSetPassword.cancel();
     };
-  }, [passwordValue, debouncedSetPassword]);
+  }, [emailValue, passwordValue, debouncedSetEmail, debouncedSetPassword]);
 
   const getRequirementStyle = useCallback(
     (condition: boolean, fieldValue: string) => {
