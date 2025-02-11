@@ -1,9 +1,10 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import debounce from "lodash/debounce";
 
 import {
   checkMinLength,
@@ -15,13 +16,7 @@ import {
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(8)
-    .max(64)
-    .regex(/[A-Z]/)
-    .regex(/[0-9]/)
-    .refine((val) => !/\s/.test(val), { message: "No spaces allowed" }),
+  password: z.string().min(8).max(64).regex(/[A-Z]/).regex(/[0-9]/),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -29,6 +24,10 @@ type FormData = z.infer<typeof schema>;
 export default function AuthForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const [debouncedEmail, setDebouncedEmail] = useState("");
+  const [debouncedPassword, setDebouncedPassword] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -38,6 +37,41 @@ export default function AuthForm() {
     resolver: zodResolver(schema),
     mode: "onChange",
   });
+
+  const emailValue = watch("email") || "";
+  const passwordValue = watch("password") || "";
+
+  const debouncedSetEmail = useMemo(
+    () =>
+      debounce((value: string) => {
+        setDebouncedEmail(value);
+      }, 1000),
+    []
+  );
+
+  const debouncedSetPassword = useMemo(
+    () =>
+      debounce((value: string) => {
+        setDebouncedPassword(value);
+      }, 1000),
+    []
+  );
+
+  useEffect(() => {
+    debouncedSetEmail(emailValue);
+
+    return () => {
+      debouncedSetEmail.cancel();
+    };
+  }, [emailValue, debouncedSetEmail]);
+
+  useEffect(() => {
+    debouncedSetPassword(passwordValue);
+
+    return () => {
+      debouncedSetPassword.cancel();
+    };
+  }, [passwordValue, debouncedSetPassword]);
 
   const getRequirementStyle = useCallback(
     (condition: boolean, fieldValue: string) => {
@@ -85,9 +119,6 @@ export default function AuthForm() {
     setIsSubmitted(true);
   };
 
-  const emailValue = watch("email") || "";
-  const passwordValue = watch("password") || "";
-
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#F4F9FF] to-[#E0EDFB] px-8">
       <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md">
@@ -101,8 +132,8 @@ export default function AuthForm() {
             type="email"
             id="email"
             className={getInputStyles(
-              isValidEmail(emailValue),
-              !isValidEmail(emailValue) && emailValue !== ""
+              isValidEmail(debouncedEmail),
+              !isValidEmail(debouncedEmail) && debouncedEmail !== ""
             )}
             placeholder="Email"
           />
@@ -114,8 +145,8 @@ export default function AuthForm() {
             id="password"
             type={showPassword ? "text" : "password"}
             className={`w-full text-black p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${getInputStyles(
-              isValidPassword(passwordValue),
-              !isValidPassword(passwordValue) && passwordValue !== ""
+              isValidPassword(debouncedPassword),
+              !isValidPassword(debouncedPassword) && debouncedPassword !== ""
             )}`}
             placeholder="Password"
           />
@@ -130,24 +161,24 @@ export default function AuthForm() {
         <div className="mb-16">
           <p
             className={`text-sm mt-2 leading-tight ${getRequirementStyle(
-              checkMinLength(passwordValue),
-              passwordValue
+              checkMinLength(debouncedPassword),
+              debouncedPassword
             )}`}
           >
             Has at least 8 characters (no spaces)
           </p>
           <p
             className={`text-sm mt-2 leading-tight ${getRequirementStyle(
-              checkUppercase(passwordValue),
-              passwordValue
+              checkUppercase(debouncedPassword),
+              debouncedPassword
             )}`}
           >
             Uppercase and lowercase letters
           </p>
           <p
             className={`text-sm mt-2 leading-tight ${getRequirementStyle(
-              checkDigit(passwordValue),
-              passwordValue
+              checkDigit(debouncedPassword),
+              debouncedPassword
             )}`}
           >
             At least one digit
